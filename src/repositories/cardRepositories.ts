@@ -1,48 +1,55 @@
-import connectionDb from '../config/database'
+import { cards } from '@prisma/client'
+import prisma from '../config/database'
 import { Card } from '../protocols/card'
 
 
 async function findByName(cardName: CardName) {
-    return connectionDb.query(`
-        SELECT * FROM cards WHERE name = $1
-    `, [cardName.name.toLowerCase()])
+    return prisma.cards.findFirst({
+        where: {
+            name: cardName.name
+        }
+    })
 }
 
-export type CardName = Omit<Card, 'attack' | 'health' | 'defense'>
+export type CardName = Omit<Card, 'attack' | 'health' | 'defense' | 'type'>
 
-async function create(card: Card) {
+async function create(card: cards) {
 
-    return connectionDb.query(`
-        INSERT INTO cards (name, attack, health, defense) 
-        VALUES ($1, $2, $3, $4)
-    `,[card.name.toLowerCase(), card.attack, card.health, card.defense])
-
+    return prisma.cards.create({
+        data: card
+    })
 }
 
 async function getAllCards() {
-    return connectionDb.query(`
-        SELECT * from cards
-    `)
+    return prisma.cards.findMany()
 }
 
-async function updateCard(cardName: CardName, newCardValues: Card) {
-    return connectionDb.query(`
-        UPDATE cards SET name = $1, attack = $2, health = $3, defense = $4
-        WHERE name = $5
-    `, [newCardValues.name.toLowerCase(), newCardValues.attack, newCardValues.health, newCardValues.defense, cardName.name])
+async function updateCard(cardId: number, newCardValues: Card) {
+    return prisma.cards.update({
+        where: {
+           id:cardId
+        },
+        data: newCardValues
+    })
+   
 }
 
-async function deleteCard(card: CardName) {
-    return connectionDb.query(`
-        DELETE from cards WHERE name = $1
-    `,[card.name.toLowerCase()])
+async function deleteCard(cardId: number) {
+    return prisma.cards.delete({
+        where: {
+            id: cardId
+        }
+    })
 
 }
+
+
 
 export default {
     findByName,
     create,
     getAllCards,
     updateCard,
-    deleteCard
+    deleteCard,
+    
 }

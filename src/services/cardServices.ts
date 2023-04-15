@@ -1,49 +1,46 @@
 import { Card } from "../protocols/card";
 import cardRepositories, { CardName } from '../repositories/cardRepositories'
 import errors from '../errors/errors'
+import { cards } from "@prisma/client";
 
 
-async function create(card: Card) {
+async function create(card: cards) {
+    
     const cardName = ({name: card.name.toLowerCase()})
-    console.log(cardName)
-    const {rows: [cardExist]} = await cardRepositories.findByName(cardName)
+   
+    const checkCard = await cardRepositories.findByName(cardName)
 
-    if(cardExist) throw errors.conflictError("Já existe uma carta com este nome!")
+    if(checkCard) throw errors.conflictError("Já existe uma carta com este nome!")
 
     await cardRepositories.create(card)
   
 }
 
 async function getAllCards() {
-    const {rows: cards}= await cardRepositories.getAllCards()
+    const cards= await cardRepositories.getAllCards()  
 
     if(!cards) throw errors.notFoundError()
   
     return cards
 }
 
-async function updateCard(name: CardName, newValues: Card) {
+async function updateCard(cardId: number, newValues: Card) {
 
-    console.log(name)
 
-    const {rows: [cardToUpdate]} = await cardRepositories.findByName(name)
-
-    console.log(cardToUpdate)
+    const updatedCard = await cardRepositories.updateCard(cardId, newValues)
     
 
-    if(!cardToUpdate) throw errors.notFoundError()
-
-    await cardRepositories.updateCard(name, newValues)
+    if(!updatedCard) throw errors.notFoundError()
+   
     
  
 }
 
-async function deleteCard(cardName: CardName) {
-    const {rows: [card]} = await cardRepositories.findByName(cardName)
+async function deleteCard(cardId: number) {
+    const deletedCard = await cardRepositories.deleteCard(cardId)
+ 
+    if(!deletedCard) throw errors.notFoundError()
 
-    if(!card) throw errors.notFoundError()
-
-    await cardRepositories.deleteCard(cardName)
     
 }
 

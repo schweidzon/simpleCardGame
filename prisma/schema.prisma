@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model cards {
+  id      Int     @id @default(autoincrement())
+  name    String @unique
+  attack  Int
+  health  Int
+  defense Int
+  types   types[] @relation("cardsTotypes")
+}
+
+model types {
+  id    Int     @id @default(autoincrement())
+  name  String
+  posts cards[] @relation("cardsTotypes")
+}

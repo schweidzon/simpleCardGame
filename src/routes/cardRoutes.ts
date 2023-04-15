@@ -7,7 +7,7 @@ const cardRoutes = Router()
 
 cardRoutes.post("/", validateSchema(cardSchema.cardSchema), cardControllers.create)
 cardRoutes.get("/", cardControllers.getAllCards)
-cardRoutes.put("/update/name=:name", cardControllers.updateCard)
-cardRoutes.delete("/delete/name=:name", cardControllers.deleteCard)
+cardRoutes.put("/update/cardId=:cardId", cardControllers.updateCard)
+cardRoutes.delete("/delete/cardId=:cardId", cardControllers.deleteCard)
 
 export default cardRoutes

@@ -6,6 +6,7 @@ const cardSchema = joi.object<Card>({
     attack: joi.number().required(),
     health: joi.number().min(2).required(),
     defense:joi.number().min(2).required(),
+    
 })
 
 export default {

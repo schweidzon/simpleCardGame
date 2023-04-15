@@ -1,17 +1,19 @@
 import { NextFunction, Request, Response } from "express";
 import { Card } from "../protocols/card";
-import { AxiosError } from 'axios';
+
 import cardServices from '../services/cardServices'
 import { CardName } from "../repositories/cardRepositories";
+import { cards } from "@prisma/client";
 
 async function create(req: Request, res: Response, next: NextFunction) {
-    const card = req.body as Card
+    const card = req.body as cards
     try {
         await cardServices.create(card);
 
         return res.status(201).send("Carta criada com sucesso")
 
     } catch (error) {
+        console.log(error)
         next(error)
     }
 }
@@ -30,13 +32,13 @@ async function getAllCards(req: Request, res: Response, next: NextFunction) {
 
 }
 async function updateCard(req: Request, res: Response, next: NextFunction) {
-    const { name } = req.params
+    const  cardId  = parseInt(req.params.cardId)
     const newValues = req.body as Card
 
 
 
     try {
-        await cardServices.updateCard({ name }, newValues)
+        await cardServices.updateCard( cardId , newValues)
 
         return res.send("Carta atualizada com sucesso!")
     } catch (error) {
@@ -50,9 +52,9 @@ async function updateCard(req: Request, res: Response, next: NextFunction) {
 }
 
 async function deleteCard(req: Request, res: Response, next: NextFunction) {
-    const { name } = req.params as CardName
+    const  cardId  = parseInt(req.params.cardId)
     try {
-        await cardServices.deleteCard({ name })
+        await cardServices.deleteCard(cardId)
         return res.send("Carta deletada com sucesso!")
 
     } catch (error) {
